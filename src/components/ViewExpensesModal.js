@@ -1,33 +1,31 @@
-import { Modal, Button, Stack } from "react-bootstrap";
-import {
-  UNCATEGORIZED_BUDGET_ID,
-  useBudgets,
-} from "../contexts/BudgetsContext";
-import { currencyFormatter } from "../utils";
+import React from "react";
+import { Modal, Stack, Button } from "react-bootstrap";
+import { useBudgets } from "../contexts/BudgetsContext";
+import { UNCATEGORIZED_BUDGET_ID } from "../contexts/BudgetsContext";
+import { currencyFormater } from "../utils";
+export default function ViewExpensesModal({ budgedId, handleClose }) {
+  const { budgets, expenses, deleteExpense, deleteBudget } = useBudgets();
+  const expenseBudgetId = expenses.filter(
+    (expense) => expense.budgetId === budgedId
+  );
 
-export default function ViewExpensesModal({ budgetId, handleClose }) {
-  const { getBudgetExpenses, budgets, deleteBudget, deleteExpense } =
-    useBudgets();
-
-  const expenses = getBudgetExpenses(budgetId);
   const budget =
-    UNCATEGORIZED_BUDGET_ID === budgetId
-      ? { name: "Uncategorized", id: UNCATEGORIZED_BUDGET_ID }
-      : budgets.find((b) => b.id === budgetId);
-
+    UNCATEGORIZED_BUDGET_ID === budgedId
+      ? { name: UNCATEGORIZED_BUDGET_ID, id: UNCATEGORIZED_BUDGET_ID }
+      : budgets.find((budget) => budget.id === budgedId);
   return (
-    <Modal show={budgetId != null} onHide={handleClose}>
+    <Modal show={budgedId != null} onHide={handleClose}>
       <Modal.Header closeButton>
         <Modal.Title>
-          <Stack direction="horizontal" gap="2">
-            <div>Expenses - {budget?.name}</div>
-            {budgetId !== UNCATEGORIZED_BUDGET_ID && (
+          <Stack gap="2" direction="horizontal">
+            Expense - {budget?.name}
+            {budgedId !== UNCATEGORIZED_BUDGET_ID && (
               <Button
+                variant="outline-danger"
                 onClick={() => {
-                  deleteBudget(budget);
+                  deleteBudget(budget.id);
                   handleClose();
                 }}
-                variant="outline-danger"
               >
                 Delete
               </Button>
@@ -36,22 +34,24 @@ export default function ViewExpensesModal({ budgetId, handleClose }) {
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Stack direction="vertical" gap="3">
-          {expenses.map((expense) => (
-            <Stack direction="horizontal" gap="2" key={expense.id}>
-              <div className="me-auto fs-4">{expense.description}</div>
-              <div className="fs-5">
-                {currencyFormatter.format(expense.amount)}
-              </div>
-              <Button
-                onClick={() => deleteExpense(expense)}
-                size="sm"
-                variant="outline-danger"
-              >
-                &times;
-              </Button>
-            </Stack>
-          ))}
+        <Stack gap="3" direction="vertical">
+          {expenseBudgetId.map((expense) => {
+            return (
+              <Stack key={expense.id} direction="horizontal" gap="2">
+                <div className="me-auto fs-4">{expense.description}</div>
+                <div className="fs-5">
+                  {currencyFormater.format(expense.amount)}
+                </div>
+                <Button
+                  variant="outline-danger"
+                  size="sm"
+                  onClick={() => deleteExpense(expense.id)}
+                >
+                  &times;
+                </Button>
+              </Stack>
+            );
+          })}
         </Stack>
       </Modal.Body>
     </Modal>
