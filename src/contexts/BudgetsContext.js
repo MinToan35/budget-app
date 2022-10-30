@@ -9,7 +9,14 @@ export const useBudgets = () => {
 };
 
 export const BudgetsProvider = ({ children }) => {
-  const [budgets, setBudgets] = useLocalStorage("budget", []);
+  const [budgets, setBudgets] = useLocalStorage("budget", [
+    {
+      id: "8fea69d9-6611-4a99-8ff1-5ac20feee5f8",
+      name: "internet",
+      max: 400000,
+    },
+    { id: "06eeccdb-5e1a-4466-9f46-d91122a74ce2", name: "books", max: 300000 },
+  ]);
   const [expenses, setExpenses] = useLocalStorage("expense", []);
   //Add budgets
   const addBudgets = ({ name, max }) => {
